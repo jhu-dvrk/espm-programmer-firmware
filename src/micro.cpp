@@ -61,6 +61,7 @@
 #include "lenval.h"
 #include "ports.h"
 #include <Arduino.h>
+#include "spi_control.hpp"
 
 
 /*============================================================================
@@ -738,38 +739,55 @@ void xsvfShiftOnly( long    lNumBits,
 
     /* Shift LSB first.  val[N-1] == LSB.  val[0] == MSB. */
     pucTdi  = plvTdi->val + plvTdi->len;
-
-    Serial.println(lNumBits);
+    // Serial.println("begin trans");
+    jtag_spi.begin();
+    jtag_spi.beginTransaction(jtag_spi_settings);
+    // Serial.println(lNumBits);
     while ( lNumBits )
     {
         /* Process on a byte-basis */
         ucTdiByte   = (*(--pucTdi));
         ucTdoByte   = 0;
-        for ( i = 0; ( lNumBits && ( i < 8 ) ); ++i )
-        {
-            --lNumBits;
-            if ( iExitShift && !lNumBits )
+    // Serial.println(lNumBits);
+
+        if (lNumBits <= 8) {
+            // Serial.println("end trans");
+            jtag_spi.endTransaction();
+            jtag_spi.end();
+            setup_jtag_spi_gpio();
+
+
+            for ( i = 0; ( lNumBits && ( i < 8 ) ); ++i )
             {
-                /* Exit Shift-DR state */
-                setPort( TMS, 1 );
+                --lNumBits;
+                if ( iExitShift && !lNumBits )
+                {
+                    /* Exit Shift-DR state */
+                    setPort( TMS, 1 );
+                }
+
+                /* Set the new TDI value */
+                setPort( TDI, (short)(ucTdiByte & 1) );
+                ucTdiByte   >>= 1;
+
+                /* Set TCK low */
+                setPort( TCK, 0 );
+
+                if ( pucTdo )
+                {
+                    /* Save the TDO value */
+                    ucTdoBit    = readTDOBit();
+                    ucTdoByte   |= ( ucTdoBit << i );
+                }
+
+                /* Set TCK high */
+                setPort( TCK, 1 );
             }
-
-            /* Set the new TDI value */
-            setPort( TDI, (short)(ucTdiByte & 1) );
-            ucTdiByte   >>= 1;
-
-            /* Set TCK low */
-            setPort( TCK, 0 );
-
-            if ( pucTdo )
-            {
-                /* Save the TDO value */
-                ucTdoBit    = readTDOBit();
-                ucTdoByte   |= ( ucTdoBit << i );
-            }
-
-            /* Set TCK high */
-            setPort( TCK, 1 );
+        } else {
+            lNumBits -= 8;
+            // Serial.println("transf1");
+            ucTdoByte = jtag_spi.transfer(ucTdiByte);
+            // Serial.println("transf2");
         }
 
         /* Save the TDO byte value */
@@ -1419,9 +1437,10 @@ int xsvfDoXSDRBCE( SXsvfInfo* pXsvfInfo )
     int             iErrorCode;
     ucEndDR = (unsigned char)(( pXsvfInfo->ucCommand == XSDRE ) ?
                                 pXsvfInfo->ucEndDR : XTAPSTATE_SHIFTDR);
-    if (pXsvfInfo->ucCommand == XSDRB) {
-
-    }
+    // if (pXsvfInfo->ucCommand == XSDRB) {
+    //     Serial.println("begin trans");
+    //     jtag_spi.beginTransaction(jtag_spi_settings);
+    // }
     iErrorCode  = xsvfBasicXSDRTDO( &(pXsvfInfo->ucTapState),
                                     pXsvfInfo->lShiftLengthBits,
                                     pXsvfInfo->sShiftLengthBytes,

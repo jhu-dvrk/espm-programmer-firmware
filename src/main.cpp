@@ -29,7 +29,7 @@ void setup() {
   pinMode(pin_tdo, INPUT);
   digitalWrite(pin_led_blue, 0);
   digitalWrite(pin_led_yellow, 0);
-
+  Serial.println("=== start ===");
   sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(30)));
 
   // bench();
