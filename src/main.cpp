@@ -48,6 +48,7 @@ void setup() {
   }
 
   while (errorcode) {
+    file.seek(0);
     errorcode = xsvfExecute();
     if (errorcode) {
       Serial.println("xsvf player error:");
@@ -56,8 +57,10 @@ void setup() {
     } 
   }
   Serial.println("done");
+  digitalWrite(pin_led_blue, 0);
+  delay(500);
   digitalWrite(pin_led_blue, 1);
-  delay(5000);
+  delay(2000);
   digitalWrite(pin_led_blue, 0);
 }
 
