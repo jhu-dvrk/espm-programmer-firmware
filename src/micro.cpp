@@ -740,7 +740,6 @@ void xsvfShiftOnly( long    lNumBits,
     /* Shift LSB first.  val[N-1] == LSB.  val[0] == MSB. */
     pucTdi  = plvTdi->val + plvTdi->len;
     // Serial.println("begin trans");
-    jtag_spi.begin();
     jtag_spi.beginTransaction(jtag_spi_settings);
     // Serial.println(lNumBits);
     while ( lNumBits )
@@ -752,7 +751,6 @@ void xsvfShiftOnly( long    lNumBits,
 
         if (lNumBits <= 8) {
             // Serial.println("end trans");
-            jtag_spi.endTransaction();
             jtag_spi.end();
             setup_jtag_spi_gpio();
 
@@ -796,6 +794,8 @@ void xsvfShiftOnly( long    lNumBits,
             (*(--pucTdo))   = ucTdoByte;
         }
     }
+    jtag_spi.end();
+    setup_jtag_spi_gpio();    
 }
 
 /*****************************************************************************
