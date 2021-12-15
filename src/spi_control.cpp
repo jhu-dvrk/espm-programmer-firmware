@@ -1,7 +1,7 @@
 #include "spi_control.hpp"
 
 SPIClass jtag_spi(pin_tdi, pin_tdo, pin_tck);
-SPISettings jtag_spi_settings(20000000, LSBFIRST, SPI_MODE0);
+SPISettings jtag_spi_settings(50000000, LSBFIRST, SPI_MODE0);
 
 void setup_jtag_spi_gpio() {
     pinMode(pin_tdi, OUTPUT);

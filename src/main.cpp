@@ -12,10 +12,19 @@ SdFat32 sd;
 File32 file;
 
 void bench();
+void blink_error(int count){
+  for (int i = 0; i < count; i++) {
+    delay(200);
+    digitalWrite(pin_led_yellow, 1);
+    delay(200);
+    digitalWrite(pin_led_yellow, 0);
+  }
+  delay(2000);
+}
 
 // File myFile;
 
-int errorcode = 0;
+int errorcode = 100;
 
 ArduinoOutStream cout(Serial);
 
@@ -33,22 +42,23 @@ void setup() {
   sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(30)));
 
   // bench();
-
-
-  file.open("5mhz.xsvf", FILE_READ);
-
-  errorcode = xsvfExecute();  
-  if (errorcode) {
-    digitalWrite(pin_led_yellow, 1);    
-  } else {
-    digitalWrite(pin_led_blue, 1);
-    digitalWrite(pin_led_yellow, 0);    
+  while (!file.open("firmware.xsvf", FILE_READ)) {
+    Serial.println("can't find/open firmware.xsvf");
+    blink_error(8);
   }
-  Serial.println(errorcode);
-  delay(2000);
+
+  while (errorcode) {
+    errorcode = xsvfExecute();
+    if (errorcode) {
+      Serial.println("xsvf player error:");
+      Serial.println(errorcode);
+      blink_error(errorcode);
+    } 
+  }
+  Serial.println("done");
+  digitalWrite(pin_led_blue, 1);
+  delay(5000);
   digitalWrite(pin_led_blue, 0);
-
-
 }
 
 void loop() {

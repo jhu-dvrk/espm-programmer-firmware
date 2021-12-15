@@ -875,7 +875,10 @@ int xsvfShift( unsigned char*   pucTapState,
             if ( plvTdoExpected )
             {
                 /* Compare TDO data to expected TDO data */
-                iMismatch   = 0;
+                // iMismatch   = 0;
+                iMismatch   = !EqualLenVal( plvTdoExpected,
+                                            plvTdoCaptured,
+                                            plvTdoMask );                
             }
 
             if ( iExitShift )
@@ -1686,7 +1689,7 @@ int xsvfRun( SXsvfInfo* pXsvfInfo )
             // Serial.println(pXsvfInfo->ucCommand);
             static bool x = 0;
             x ^= 1;
-            digitalWrite(6, x);  
+            digitalWrite(pin_led_blue, x);  
             XSVFDBG_PRINTF1( 2, "  %s\n",
                              xsvf_pzCommandName[pXsvfInfo->ucCommand] );
             /* If your compiler cannot take this form,
