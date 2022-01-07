@@ -39,7 +39,10 @@ void setup() {
   digitalWrite(pin_led_blue, 0);
   digitalWrite(pin_led_yellow, 0);
   Serial.println("=== start ===");
-  sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(120)));
+  while (!sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(120)))) {
+    Serial.println("SD card problem.");
+    blink_error(9);
+  }
 
   // bench();
   while (!file.open("firmware.xsvf", FILE_READ)) {
