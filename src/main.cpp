@@ -39,7 +39,7 @@ void setup() {
   digitalWrite(pin_led_blue, 0);
   digitalWrite(pin_led_yellow, 0);
   Serial.println("=== start ===");
-  sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(30)));
+  sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(120)));
 
   // bench();
   while (!file.open("firmware.xsvf", FILE_READ)) {
