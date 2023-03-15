@@ -38,17 +38,21 @@ void setup() {
   pinMode(pin_tdo, INPUT);
   digitalWrite(pin_led_blue, 0);
   digitalWrite(pin_led_yellow, 0);
+  delay(500);
   Serial.println("=== start ===");
-  while (!sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(120)))) {
-    Serial.println("SD card problem.");
-    blink_error(9);
-  }
-
-  // bench();
-  while (!file.open("firmware.xsvf", FILE_READ)) {
-    Serial.println("can't find/open firmware.xsvf");
-    blink_error(8);
-  }
+  bool sd_ok = false;
+  bool file_ok = false;
+  do {
+    sd_ok = sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(120)));
+    if (sd_ok) file_ok = file.open("firmware.xsvf", FILE_READ);
+    if (!sd_ok) {
+      Serial.println("SD card problem.");
+      blink_error(2);
+    } else if (!file_ok) {
+      Serial.println("can't find/open firmware.xsvf");
+      blink_error(3);
+    }
+  } while (!sd_ok || !file_ok);
 
   while (errorcode) {
     file.seek(0);
@@ -56,8 +60,8 @@ void setup() {
     if (errorcode) {
       Serial.println("xsvf player error:");
       Serial.println(errorcode);
-      blink_error(errorcode);
-    } 
+      blink_error(3 + errorcode);
+    }
   }
   Serial.println("done");
   digitalWrite(pin_led_blue, 0);
