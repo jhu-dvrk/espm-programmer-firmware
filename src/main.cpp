@@ -44,12 +44,12 @@ void setup() {
   bool file_ok = false;
   do {
     sd_ok = sd.begin(SdSpiConfig(pin_sd_cs, DEDICATED_SPI, SD_SCK_MHZ(120)));
-    if (sd_ok) file_ok = file.open("firmware.xsvf", FILE_READ);
+    if (sd_ok) file_ok = file.open("espm.xsvf", FILE_READ);
     if (!sd_ok) {
       Serial.println("SD card problem.");
       blink_error(2);
     } else if (!file_ok) {
-      Serial.println("can't find/open firmware.xsvf");
+      Serial.println("can't find/open espm.xsvf");
       blink_error(3);
     }
   } while (!sd_ok || !file_ok);
