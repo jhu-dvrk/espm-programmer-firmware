@@ -4,7 +4,7 @@ This is the firmware for ESPM Programmer, not ESPM.
 
 Modified from Xilinx application note XAPP058.
 
-It reads `firmware.xsvf` on the SD card and replays it on the JTAG port at power on.
+It reads `espm.xsvf` on the SD card and replays it on the JTAG port at power on.
 
 ## Build
 
@@ -31,7 +31,7 @@ On error, you will see blinking yellow LED. Count the blinks.
 
 ```
 2: SD card hardware or filesystem problem
-3: Can't find/open firmware.xsvf
+3: Can't find/open espm.xsvf
 4: XSVF_ERROR_UNKNOWN
 5: XSVF_ERROR_TDOMISMATCH
 6: XSVF_ERROR_MAXRETRIES   /* TDO mismatch after max retries */
