@@ -1,3 +1,6 @@
+> [!WARNING]
+> ESPM Programmer v1.x and this firmware is deprecated. 
+
 # ESPM Programmer firmware
 
 This is the firmware for ESPM Programmer, not ESPM.
